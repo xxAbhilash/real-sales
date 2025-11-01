@@ -274,7 +274,7 @@ const Chat = ({ slug, children }) => {
     // Check against last added transcript within 3 seconds (immediate duplicate check)
     if (
       lastAddedTranscriptRef.current === trimmedTranscript &&
-      currentTime - lastAddedTimeRef.current < 3000
+      currentTime - lastAddedTimeRef.current < 2000
     ) {
       console.log("⚠️ Same as last transcript (within 3s), ignoring");
       return;
@@ -317,11 +317,11 @@ const Chat = ({ slug, children }) => {
 
     // Auto-send after transcript is ready
     // We just added a message, so trigger send immediately
-    console.log("🚀 Scheduling auto-send chat after transcript ready");
-    setTimeout(() => {
-      console.log("⏰ Timeout complete, triggering send...");
-      setTriggerSenChat(true);
-    }, 200); // Small delay to ensure state update completes
+    // console.log("🚀 Scheduling auto-send chat after transcript ready");
+    // setTimeout(() => {
+    console.log("⏰ Timeout complete, triggering send...");
+    setTriggerSenChat(true);
+    // }, 200); // Small delay to ensure state update completes
   };
 
   // Initialize Speech-to-Text hook with 5-second silence threshold
@@ -330,7 +330,7 @@ const Chat = ({ slug, children }) => {
     isListening,
     startListening: startSpeechRecognition,
     stopListening: stopSpeechRecognition,
-  } = useSpeechToText(handleTranscriptReady, 3000);
+  } = useSpeechToText(handleTranscriptReady, 2000);
 
   // Keep ref in sync with state to avoid stale closures
   useEffect(() => {
@@ -734,7 +734,7 @@ const Chat = ({ slug, children }) => {
       if (!isElevenLabsConnected) {
         console.log("Connecting to ElevenLabs for streaming response...");
         connectElevenLabs();
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        // await new Promise((resolve) => setTimeout(resolve, 1000));
       }
 
       // Single context ID for this conversation turn
