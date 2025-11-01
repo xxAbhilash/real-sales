@@ -46,7 +46,7 @@ const useElevenLabsMultiContext = ({
   /**
    * Initialize Web Audio API context
    */
-  const initAudioContext = useCallback(() => {
+  const initAudioContext = useCallback(async () => {
     if (!audioContextRef.current) {
       audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
       
@@ -56,6 +56,18 @@ const useElevenLabsMultiContext = ({
         analyserRef.current.connect(audioContextRef.current.destination);
       }
     }
+
+    // 🍎 iOS Fix: Resume AudioContext if it's suspended
+    // iOS Safari requires explicit resume() call before audio can play
+    if (audioContextRef.current.state === 'suspended') {
+      try {
+        await audioContextRef.current.resume();
+        console.log('✅ AudioContext resumed (iOS compatibility)');
+      } catch (error) {
+        console.error('⚠️ Failed to resume AudioContext:', error);
+      }
+    }
+
     return audioContextRef.current;
   }, [enableAudioVisualization]);
 
@@ -84,7 +96,20 @@ const useElevenLabsMultiContext = ({
     let lastPlayedContextId = null;
 
     try {
-      const audioContext = initAudioContext();
+      const audioContext = await initAudioContext();
+      
+      // 🍎 iOS Fix: Ensure AudioContext is running before playing audio
+      // Check state again in case it was suspended between init and play
+      if (audioContext.state === 'suspended') {
+        console.log('⚠️ AudioContext suspended, resuming...');
+        try {
+          await audioContext.resume();
+          console.log('✅ AudioContext resumed before playback');
+        } catch (error) {
+          console.error('❌ Failed to resume AudioContext:', error);
+          throw new Error('AudioContext could not be resumed. User interaction may be required.');
+        }
+      }
       
       while (audioQueueRef.current.length > 0) {
         const item = audioQueueRef.current.shift();
@@ -104,6 +129,12 @@ const useElevenLabsMultiContext = ({
           }
 
           // Play audio
+          // 🍎 iOS Fix: Verify context is running before starting playback
+          if (audioContext.state !== 'running') {
+            console.warn(`⚠️ AudioContext state is ${audioContext.state}, attempting resume...`);
+            await audioContext.resume();
+          }
+
           source.start(0);
           
           if (!isPlaying) {

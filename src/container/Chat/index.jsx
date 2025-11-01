@@ -1069,11 +1069,28 @@ const Chat = ({ slug, children }) => {
     try {
       // Create a silent audio context to unlock audio on mobile
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      
+      // Ensure context is running (iOS starts in suspended state)
+      if (ctx.state === 'suspended') {
+        await ctx.resume();
+        console.log('✅ AudioContext resumed in handlePrimeAudio (iOS compatibility)');
+      }
       const buffer = ctx.createBuffer(1, 1, 22050);
       const source = ctx.createBufferSource();
       source.buffer = buffer;
       source.connect(ctx.destination);
       source.start(0);
+
+      // Wait for the silent audio to complete to ensure audio is fully primed
+      await new Promise((resolve) => {
+        source.onended = () => {
+          console.log('✅ Silent audio completed - audio system primed');
+          resolve();
+        };
+      });
+      
+      // Clean up the temporary context
+      await ctx.close();
       
       setAudioPrimed(true);
       setShowAudioPrompt(false);
