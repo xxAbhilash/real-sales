@@ -1,0 +1,76 @@
+import React, { useEffect, useState } from "react";
+import PricingCard from "../../../common/pricingCard";
+import { useDispatch } from "react-redux";
+import { SessionModesValue } from "../../../redux/OpenModal";
+
+const Free = ({ subscription }) => {
+  const dispatch = useDispatch();
+  const [freeSubscriptions, setFreeSubscriptions] = useState([]);
+  const freePricing = [
+    {
+      name: "Starter",
+      description: "Best for solo Sales Rep",
+      descriptionSub: "2 personas, personal coaching insight",
+      price1: "$59",
+      price2: "$249",
+      features: [
+        { allow: false, title: "User" },
+        { allow: false, title: "Personas" },
+        { allow: false, title: "Industry" },
+        { allow: false, title: "Saved Interactions" },
+        { allow: false, title: "Sales Coaching" },
+        {
+          allow: false,
+          title:
+            "Upload Company info and Case Studies for customized experience",
+        },
+        { allow: false, title: "Team Reporting for Manager" },
+        { allow: false, title: "Customer Persona development" },
+        {
+          allow: false,
+          title: "Business Intelligence for Product Development",
+        },
+      ],
+    },
+  ];
+
+  useEffect(() => {
+    if (Array.isArray(subscription)) {
+      const onlyFree = subscription.filter(
+        (v) => v?.plan_type === "free"
+      );
+      if (onlyFree?.length) setFreeSubscriptions(onlyFree);
+      else setFreeSubscriptions([]);
+    } else {
+      setFreeSubscriptions([]);
+    }
+  }, [subscription]);
+
+  return (
+    <div className="page-container mx-auto px-4 py-8 container">
+      <div className="lg:p-16 p-8">
+        <p className="lg:text-2xl text-[16px] text-center m-plus-rounded-1c-regular text-[#060606] w-full flex items-center justify-center gap-2 mb-12">
+          Enjoy Our Free Plan - No Cost, Full Value!
+        </p>
+        {(freeSubscriptions?.length ? freeSubscriptions : freePricing)?.length
+          ? (freeSubscriptions?.length ? freeSubscriptions : freePricing)?.map((v, i) => (
+              <PricingCard
+                key={i}
+                hidePricing={true}
+                freePricing={true}
+                headingCls={`flex-col-reverse items-start`}
+                pricingFetSls={`lg:w-[33%] w-full`}
+                footerCls={`bg-none lg:w-[33%] w-full flex flex-col items-center justify-center gap-4`}
+                crdExtraCls={`flex lg:flex-row flex-col item-center justify-between`}
+                cardValue={v}
+                buttonText="Request Trial Session"
+                onClick={() => window.location.href = 'http://localhost:3000/overview'}
+              />
+            ))
+          : null}
+      </div>
+    </div>
+  );
+};
+
+export default Free;
