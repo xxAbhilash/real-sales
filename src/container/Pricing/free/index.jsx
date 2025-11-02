@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import PricingCard from "../../../common/pricingCard";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { SessionModesValue } from "../../../redux/OpenModal";
 
 const Free = ({ subscription }) => {
   const dispatch = useDispatch();
+  const token = useSelector((state) => state.auth.auth);
   const [freeSubscriptions, setFreeSubscriptions] = useState([]);
   const freePricing = [
     {
@@ -64,7 +65,7 @@ const Free = ({ subscription }) => {
                 crdExtraCls={`flex lg:flex-row flex-col item-center justify-between`}
                 cardValue={v}
                 buttonText="Request Trial Session"
-                onClick={() => window.location.href = 'https://dashboardreal-sales.vercel.app/overview'}
+                onClick={() => window.location.href = `https://dashboardreal-sales.vercel.app/overview?token=${token}`}
               />
             ))
           : null}
