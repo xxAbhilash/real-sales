@@ -64,7 +64,7 @@ const Free = ({ subscription }) => {
                 crdExtraCls={`flex lg:flex-row flex-col item-center justify-between`}
                 cardValue={v}
                 buttonText="Request Trial Session"
-                onClick={() => window.location.href = 'http://localhost:3000/overview'}
+                onClick={() => window.location.href = 'https://dashboardreal-sales.vercel.app/overview'}
               />
             ))
           : null}
