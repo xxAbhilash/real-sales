@@ -1341,6 +1341,11 @@ const Chat = ({ slug, children }) => {
                       className="coustomChatSwitch !h-[35px] !w-[70px] !p-0"
                       checked={checked}
                       onChange={(e) => setChecked(e.target.checked)}
+                      sx={{
+                        "& .MuiSwitch-track": {
+                          backgroundColor: checked ? "#FFDE5A !important": "#767577 !important",
+                        },
+                      }}
                     />
                   </div>
                 </div>
@@ -2115,14 +2120,14 @@ const Chat = ({ slug, children }) => {
                               isAutoMode ? "text-white" : "text-[#FFFFFF80]"
                             } !text-[20px]`}
                           />
-                          {tour && (
+                          {/* {tour && (
                             <div className="left-[130%] absolute lg:flex hidden items-center ">
                               <ArrowLeftIcon className="right-[80%] absolute text-green-500" />
                               <div className="shadow-md bg-green-500 text-white sora-regular text-sm px-2 rounded">
                                 Auto-Mode (Enabled)
                               </div>
                             </div>
-                          )}
+                          )} */}
                         </div>
                       </CustomTooltip>
                       <div className="lg:flex hidden w-14 h-14 rounded-full p-1 border-2 border-solid border-white overflow-hidden">

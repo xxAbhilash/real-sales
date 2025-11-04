@@ -258,7 +258,7 @@ input::-webkit-inner-spin-button {
 .coustomChatSwitch span.MuiSwitch-track {
   border-radius: 100px !important;
   border: 1px solid #060606 !important;
-  background: #FFDE5A !important;
+  /* background: #FFDE5A !important; */
   opacity: 100% !important;
 }
 

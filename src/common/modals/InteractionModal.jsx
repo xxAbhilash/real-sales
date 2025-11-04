@@ -143,12 +143,12 @@ const InteractionModal = ({ onNext }) => {
                     </div>
                     <div className="w-full">
                       <h1 className="lg:text-[28px] text-[16px] m-plus-rounded-1c-medium text-[#060606B2]">
-                        Prospecting
+                        PROSPECTING MODE
                       </h1>
                       <p className="lg:text-[14px] text-[12px] m-plus-rounded-1c-regular text-[#060606CC]">
-                        Lorem Ipsum is simply dummy text of the printing and
-                        typesetting industry, lorem Ipsum has been the
-                        industry's ...
+                        <span className="font-bold">Break the ice and earn the next step.</span><br/>
+                        Practice cold outreach, initial conversations, and moving prospects toward discovery meetings.
+
                       </p>
                     </div>
                   </div>
@@ -176,12 +176,12 @@ const InteractionModal = ({ onNext }) => {
                     </div>
                     <div className="w-full">
                       <h1 className="lg:text-[28px] text-[16px] m-plus-rounded-1c-medium text-[#060606B2]">
-                        Discovering
+                        DISCOVERING MODE
                       </h1>
                       <p className="lg:text-[14px] text-[12px] m-plus-rounded-1c-regular text-[#060606CC]">
-                        Lorem Ipsum is simply dummy text of the printing and
-                        typesetting industry, lorem Ipsum has been the
-                        industry's ...
+                        <span className="font-bold">Uncover needs and identify opportunities.</span><br/>
+                        Master questioning techniques to identify pain points, explore opportunities, and qualify prospects.
+
                       </p>
                     </div>
                   </div>
@@ -213,12 +213,12 @@ const InteractionModal = ({ onNext }) => {
                   <div className="w-full flex gap-4 lg:flex-row flex-col">
                     <div className="flex flex-col items-start lg:w-[40%] w-full">
                       <h1 className="lg:text-[28px] text-[16px] m-plus-rounded-1c-medium text-[#060606B2] capitalize">
-                        closing
+                        CLOSING MODE
                       </h1>
                       <p className="lg:text-[14px] text-[12px] m-plus-rounded-1c-regular text-[#060606CC]">
-                        Lorem Ipsum is simply dummy text of the printing and
-                        typesetting industry, lorem Ipsum has been the
-                        industry's ...
+                        <span className="font-bold">Address objections and secure commitment.</span><br/>
+                        Navigate final concerns, demonstrate value, and close the deal.
+
                       </p>
                     </div>
                     <div className="lg:w-[60%] w-full flex flex-col items-end gap-2">
