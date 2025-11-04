@@ -224,7 +224,7 @@ const InteractionModal = ({ onNext }) => {
                     <div className="lg:w-[60%] w-full flex flex-col items-end gap-2">
                       <div className="w-full h-24 flex items-center lg:flex-row flex-col lg:gap-4 gap-2">
                         <p className="lg:text-[16px] text-[13px] sora-regular text-[#060606] lg:w-[35%] w-full">
-                          Upload&nbsp;Optional Documents:
+                          Upload&nbsp;Documents:
                         </p>
                         {isUploading ? (
                           <div className="w-full flex items-center justify-center">
@@ -242,7 +242,7 @@ const InteractionModal = ({ onNext }) => {
                             onClick={linkPersona ? undefined : handleClick}
                           >
                             <p className="lg:text-[14px] text-[12px] m-plus-rounded-1c-regular text-[#060606CC] underline p-4">
-                              Upload or drag & drop your files
+                              Upload your proposal or offer document (optional)
                             </p>
                             <input
                               type="file"
