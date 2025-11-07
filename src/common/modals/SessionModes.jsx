@@ -69,45 +69,56 @@ const SessionModes = () => {
                   <div
                     key={i}
                     className={`relative lg:w-[48%] w-full h-[300px] rounded-[20px] overflow-hidden cursor-pointer`}
-                    onClick={()=> setType(v?.type)}
+                    onClick={()=> v?.type !== "video" && setType(v?.type)}
                   >
-                    <Image
-                      src={v?.image}
-                      alt={v?.title}
-                      className="w-full h-full"
-                    />
-                    <div className="absolute top-0 flex flex-col justify-between bg-gradient-to-t from-black/80 via-black/60 to-black/0 w-full h-full p-4">
-                      <div className="cursor-pointer bg-[#FFFFFF33] w-fit h-fit p-2 rounded-full">
-                        <div className="h-5 w-5 rounded-full border-2 border-solid border-[#FFFFFF] flex items-center justify-center">
-                          {v?.type === type ? <div className="h-3 w-3 rounded-full bg-[#FFFFFF]" /> : null}
-                        </div>
-                      </div>
-                      <div className="flex flex-col items-start gap-1">
-                        <h1 className="m-plus-rounded-1c-regular lg:text-2xl text-xl text-[#FFDE5A]">
-                          {v?.title}
-                        </h1>
-                        <p className="sora-thin text-white lg:text-[16px] text-[12px]">
-                          {v?.subTitle}
-                        </p>
-                        <div className="flex items-center gap-2">
-                          <div className="border border-solid border-[#FFFFFFB2] rounded-[20px] bg-[#FFFFFF1A] relative overflow-hidden">
-                            <div className="bg-[url(../../public/assets/images/RealSales-abstracts/highlighter-glow.png)] bg-cover bg-center bg-no-repeat opacity-60 absolute left-0 -top-6 w-12 h-12" />
-                            <p className="m-plus-rounded-1c-regular text-[#FFFFFFB2] text-[14px] px-3 py-1 pb-1.5 leading-[14px]">Happy Users: {v?.rating}</p>
-                            <div className="bg-[url(../../public/assets/images/RealSales-abstracts/highlighter-glow.png)] bg-cover bg-center bg-no-repeat opacity-60 absolute right-[30%] -bottom-6 w-12 h-12" />
+                    <div className={v?.type === "video" ? "opacity-60" : ""}>
+                      <Image
+                        src={v?.image}
+                        alt={v?.title}
+                        className="w-full h-full"
+                      />
+                      <div className="absolute top-0 flex flex-col justify-between bg-gradient-to-t from-black/80 via-black/60 to-black/0 w-full h-full p-4">
+                        <div className="cursor-pointer bg-[#FFFFFF33] w-fit h-fit p-2 rounded-full">
+                          <div className="h-5 w-5 rounded-full border-2 border-solid border-[#FFFFFF] flex items-center justify-center">
+                            {v?.type === type ? <div className="h-3 w-3 rounded-full bg-[#FFFFFF]" /> : null}
                           </div>
-                          <Rating
-                            name="text-feedback"
-                            value={+v?.rating}
-                            readOnly
-                            precision={1}
-                            style={{ fontSize: "1rem" }}
-                            emptyIcon={
-                              <StarIcon style={{ opacity: 0.55 }} fontSize="small" />
-                            }
-                          />
+                        </div>
+                        <div className="flex flex-col items-start gap-1">
+                          <h1 className="m-plus-rounded-1c-regular lg:text-2xl text-xl text-[#FFDE5A]">
+                            {v?.title}
+                          </h1>
+                          <p className="sora-thin text-white lg:text-[16px] text-[12px]">
+                            {v?.subTitle}
+                          </p>
+                          <div className="flex items-center gap-2">
+                            <div className="border border-solid border-[#FFFFFFB2] rounded-[20px] bg-[#FFFFFF1A] relative overflow-hidden">
+                              <div className="bg-[url(../../public/assets/images/RealSales-abstracts/highlighter-glow.png)] bg-cover bg-center bg-no-repeat opacity-60 absolute left-0 -top-6 w-12 h-12" />
+                              <p className="m-plus-rounded-1c-regular text-[#FFFFFFB2] text-[14px] px-3 py-1 pb-1.5 leading-[14px]">Happy Users: {v?.rating}</p>
+                              <div className="bg-[url(../../public/assets/images/RealSales-abstracts/highlighter-glow.png)] bg-cover bg-center bg-no-repeat opacity-60 absolute right-[30%] -bottom-6 w-12 h-12" />
+                            </div>
+                            <Rating
+                              name="text-feedback"
+                              value={+v?.rating}
+                              readOnly
+                              precision={1}
+                              style={{ fontSize: "1rem" }}
+                              emptyIcon={
+                                <StarIcon style={{ opacity: 0.55 }} fontSize="small" />
+                              }
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>
+                    {v?.type === "video" && (
+                      <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+                        <div className="bg-[#00000080] px-6 py-3 rounded-lg">
+                          <p className="m-plus-rounded-1c-regular text-2xl text-[#FFDE5A] font-bold">
+                            Coming Soon
+                          </p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ))
                 : null}
