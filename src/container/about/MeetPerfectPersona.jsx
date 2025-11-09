@@ -70,18 +70,6 @@ const MeetPerfectPersona = () => {
         onClick={() => {
           if (token !== "") {
             dispatch(InteractionValue({ open: true, fromData: "" }));
-          } else if (persona_id !== "") {
-            dispatch(
-              InteractionValue({
-                open: true,
-                fromData: {
-                  user_id: user_id,
-                  persona_id: persona_id,
-                },
-              })
-            );
-          } else if (persona_id !== "" && session_id !== "") {
-            dispatch(ShortlistedPersonaValue(true));
           } else {
             dispatch(TryRealsalesValue(true));
           }

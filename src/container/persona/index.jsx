@@ -156,6 +156,19 @@ const Persona = () => {
     readProduct();
     if (typeof window !== "undefined") {
       setModeId(localStorage.getItem("mode_id"));
+      
+      // Check if there's a selected industry from the flow
+      const selectedIndustry = localStorage.getItem("selected_industry");
+      const selectedIndustryId = localStorage.getItem("selected_industry_id");
+      
+      if (selectedIndustry) {
+        setIndustryFilter(selectedIndustry);
+        setIndustryId(selectedIndustryId || "");
+        
+        // Clear the stored industry after applying it
+        localStorage.removeItem("selected_industry");
+        localStorage.removeItem("selected_industry_id");
+      }
     }
   }, []);
 
@@ -171,11 +184,12 @@ const Persona = () => {
     );
   };
 
-  // Function to clear all filters
+  // Function to clear all filters (excluding industry which came from the flow)
   const clearAllFilters = () => {
     setRoleFilter("");
-    setIndustryFilter("");
-    setIndustryId("");
+    // Don't clear industryFilter and industryId as they come from the selection flow
+    // setIndustryFilter("");
+    // setIndustryId("");
     setProds("");
     setModelFilter("");
     setPlantSizeFilter("");
@@ -327,7 +341,7 @@ const Persona = () => {
       </FormControl>
 
       {/* Industries */}
-      <FormControl variant="outlined" className="sm:w-[120px] w-full">
+      {/* <FormControl variant="outlined" className="sm:w-[120px] w-full">
         <InputLabel
           id="industry-filter-label"
           className="!bg-transparent !px-2"
@@ -354,7 +368,7 @@ const Persona = () => {
             </MenuItem>
           ))}
         </Select>
-      </FormControl>
+      </FormControl> */}
 
       {/* products */}
       {products?.length ? (

@@ -13,6 +13,7 @@ import PersonaTypeModal from "../modals/PersonaTypeModal";
 import InteractionModal from "../modals/InteractionModal";
 import IdealPersonaModal from "../modals/IdealPersonaModal";
 import ShortlistedPersonaModal from "../modals/ShortlistedPersonaModal";
+import IndustrySelectionModal from "../modals/IndustrySelectionModal";
 import {
   PersonaTypeValue,
   InteractionValue,
@@ -329,6 +330,7 @@ const Layout = ({ children }) => {
       {!isChatPage && <Footer />}
       {/* Modal components */}
       <SessionModes />
+      <IndustrySelectionModal />
       <DemoMeeting />
       <TryRealsales />
       <WaitAMinute />

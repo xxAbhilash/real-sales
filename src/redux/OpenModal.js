@@ -8,6 +8,7 @@ const initialState = {
   idealPersonaValue: {open: false, type: ""},
   shortlistedPersonaValue: false,
   sessionModesValue: false,
+  industrySelectionValue: { open: false, type: "" },
   waitAMinuteValue: { open: false, type: "" },
   endChatValue: false,
   uploadYourDocValue: false,
@@ -39,6 +40,9 @@ const OpenModalSlice = createSlice({
     SessionModesValue: (state, action) => {
       state.sessionModesValue = action.payload || false;
     },
+    IndustrySelectionValue: (state, action) => {
+      state.industrySelectionValue = action.payload || false;
+    },
     WaitAMinuteValue: (state, action) => {
       state.waitAMinuteValue = action.payload || false;
     },
@@ -63,6 +67,7 @@ export const {
   IdealPersonaValue,
   ShortlistedPersonaValue,
   SessionModesValue,
+  IndustrySelectionValue,
   WaitAMinuteValue,
   EndChatValue,
   UploadYourDocValue,
