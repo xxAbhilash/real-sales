@@ -19,8 +19,8 @@ const About = () => {
         </h1>
       </div> */}
       {/* <QuickSearch /> */}
-      <HowItWorks offPollygon={true} />
       <MeetPerfectPersona />
+      <HowItWorks offPollygon={true} />
     </>
   );
 };

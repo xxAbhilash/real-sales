@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import CommonButton from "../commonButton";
 import DoneOutlinedIcon from "@mui/icons-material/DoneOutlined";
-import textFieldEnd from "../../../public/assets/images/aboutus/textFieldEnd.png";
+// import textFieldEnd from "../../../public/assets/images/aboutus/textFieldEnd.png";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useApi } from "../../hooks/useApi";
@@ -533,7 +533,7 @@ const TryRealsales = (props) => {
                 </div>
               </div>
 
-              <div className="flex gap-2 relative">
+              {/* <div className="flex gap-2 relative">
                 <TextField
                   label="Your MVP Coupon Code"
                   variant="standard"
@@ -554,7 +554,7 @@ const TryRealsales = (props) => {
                   alt="textFieldEnd"
                   className="absolute right-0"
                 />
-              </div>
+              </div> */}
 
               <div className="flex gap-2 relative">
                 <TextField

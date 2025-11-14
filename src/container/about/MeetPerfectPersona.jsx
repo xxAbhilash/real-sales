@@ -55,29 +55,31 @@ const MeetPerfectPersona = () => {
   }
 
   return (
-    <div
-      id="custom"
-      className="page-container mx-auto px-4 py-8 container flex items-center justify-center flex-col lg:gap-4 gap-2"
-    >
-      <p className="lg:text-2xl text-[16px] text-center sora-light text-[#060606] w-full">
-        Start your session
-      </p>
-      {/* <h1 className="lg:text-6xl text-3xl text-center text-[#060606] m-plus-rounded-1c-regular lg:w-[60%] w-full">
-        We're here to give you a pixel-perfect Choice
-      </h1> */}
-      <div
-        className="flex items-center gap-2 text-[#060606] bg-[#FFE942] m-plus-rounded-1c-medium capitalize py-2.5 px-18 rounded-full cursor-pointer mt-10 mb-10"
-        onClick={() => {
-          if (token !== "") {
-            dispatch(InteractionValue({ open: true, fromData: "" }));
-          } else {
-            dispatch(TryRealsalesValue(true));
-          }
-        }}
-      >
-        START
-         <ArrowRight width={19} height={13} />
-      </div>
+    <div className="w-full h-full">
+      <div className="bg-[url(../../public/assets/images/RealSales-backgrounds/bg-10.png)] bg-cover bg-center bg-no-repeat pt-4 pb-8">
+        <div
+          id="custom"
+          className="page-container mx-auto px-4 container flex items-center justify-center flex-col lg:gap-4 gap-2"
+        >
+          <p className="lg:text-2xl text-[16px] text-center sora-light text-[#060606] w-full">
+            Start your session
+          </p>
+          {/* <h1 className="lg:text-6xl text-3xl text-center text-[#060606] m-plus-rounded-1c-regular lg:w-[60%] w-full">
+            We're here to give you a pixel-perfect Choice
+          </h1> */}
+          <div
+            className="flex items-center gap-2 text-[#060606] bg-[#FFE942] m-plus-rounded-1c-medium capitalize py-2.5 px-18 rounded-full cursor-pointer mt-10 mb-10"
+            onClick={() => {
+              if (token !== "") {
+                dispatch(InteractionValue({ open: true, fromData: "" }));
+              } else {
+                dispatch(TryRealsalesValue(true));
+              }
+            }}
+          >
+            START
+             <ArrowRight width={19} height={13} />
+          </div>
 
       {/* <div className="w-full flex flex-col items-start gap-2">
         <h2
@@ -128,6 +130,8 @@ const MeetPerfectPersona = () => {
           &nbsp; Mode of Real AI:
         </h2>
       </div> */}
+        </div>
+      </div>
     </div>
   );
 };
