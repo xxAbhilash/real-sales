@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import whiteLogoNoBackground from "../../../public/assets/images/RealSales-official-logo/For Web/png/White logo - no background.png";
 import menueIcon from "../../../public/assets/icons/menueIcon.svg";
@@ -44,6 +44,7 @@ import MicOffSharpIcon from "@mui/icons-material/MicOffSharp";
 import Link from "next/link";
 import { apis } from "../../utils/apis";
 import { useApi } from "../../hooks/useApi";
+import axiosInstance from "../../utils/axiosInstance";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import soundWave from "../../../public/assets/gifs/soundWave.gif";
 import soundWaveAi from "../../../public/assets/gifs/soundWaveAi.gif";
@@ -183,7 +184,7 @@ const styles = `
 
 const Chat = ({ slug, children }) => {
   const { Post, Get } = useApi();
-  const { chat_chat, coaching, documents_upload } = apis;
+  const { chat_chat, coaching, documents_upload, sessions, auth_me } = apis;
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -316,12 +317,9 @@ const Chat = ({ slug, children }) => {
     ]);
 
     // Auto-send after transcript is ready
-    // We just added a message, so trigger send immediately
-    // console.log("🚀 Scheduling auto-send chat after transcript ready");
-    // setTimeout(() => {
-    console.log("⏰ Timeout complete, triggering send...");
+    // Trigger send immediately - React will batch state updates efficiently
+    console.log("🚀 Triggering chat send immediately after transcript ready");
     setTriggerSenChat(true);
-    // }, 200); // Small delay to ensure state update completes
   };
 
   // Initialize Speech-to-Text hook with 5-second silence threshold
@@ -533,21 +531,299 @@ const Chat = ({ slug, children }) => {
   //   }
   // };
 
+  // Function to fetch persona data from session ID
+  const fetchPersonaDataFromSession = useCallback(async (sessionId) => {
+    // Store session_id in localStorage first (ensure it's there)
+    if (sessionId) {
+      localStorage.setItem("session_id", sessionId);
+      console.log("✅ Session ID stored in localStorage:", sessionId);
+    }
+    
+    // Use axiosInstance directly to avoid error toasts from useApi hook
+    // This allows us to handle 404 errors gracefully without showing error messages
+    try {
+      console.log("🔍 Attempting to fetch session data:", sessionId);
+      
+      // Try the primary endpoint format
+      const endpoint = `${sessions}${sessionId}`;
+      console.log(`🔍 Trying endpoint: ${endpoint}`);
+      
+      // Use axiosInstance directly to avoid automatic error toasts
+      const response = await axiosInstance.get(endpoint);
+      const sessionData = response?.data;
+      
+      if (!sessionData) {
+        console.log("⚠️ No session data returned, using localStorage data");
+        return null;
+      }
+      
+      console.log("📦 Full session data received:", sessionData);
+      
+      // Extract and store mode_id
+      if (sessionData?.mode_id) {
+        localStorage.setItem("mode_id", sessionData.mode_id);
+        console.log("✅ Mode ID stored in localStorage:", sessionData.mode_id);
+      } else if (sessionData?.mode?.mode_id) {
+        localStorage.setItem("mode_id", sessionData.mode.mode_id);
+        console.log("✅ Mode ID stored in localStorage (nested):", sessionData.mode.mode_id);
+      }
+      
+      // Extract and store persona data
+      let personaDataToStore = null;
+      
+      if (sessionData?.persona) {
+        console.log("✅ Persona data fetched from session:", sessionData.persona);
+        personaDataToStore = sessionData.persona;
+      } else if (sessionData?.persona_data) {
+        console.log("✅ Persona data fetched from session (nested):", sessionData.persona_data);
+        personaDataToStore = sessionData.persona_data;
+      }
+      
+      if (personaDataToStore) {
+        // Check if voice_id exists in localStorage (from URL) and add it to persona_data if not present
+        const voiceIdFromStorage = localStorage.getItem("voice_id");
+        if (voiceIdFromStorage && !personaDataToStore.voice_id) {
+          personaDataToStore.voice_id = voiceIdFromStorage;
+          console.log("✅ Voice ID from localStorage added to persona_data:", voiceIdFromStorage);
+        }
+        
+        // Save persona data to localStorage
+        localStorage.setItem("persona_data", JSON.stringify(personaDataToStore));
+        localStorage.setItem("persona_id", personaDataToStore?.persona_id || "");
+        
+        // Store voice_id separately if present
+        if (personaDataToStore?.voice_id) {
+          localStorage.setItem("voice_id", personaDataToStore.voice_id);
+          console.log("✅ Voice ID stored in localStorage:", personaDataToStore.voice_id);
+        }
+        
+        console.log("✅ Persona data stored in localStorage");
+        
+        // Set persona data in state
+        setPersonaData(personaDataToStore);
+        return personaDataToStore;
+      } else {
+        console.log("⚠️ No persona data found in session response");
+        return null;
+      }
+    } catch (error) {
+      // Handle 404 and other errors gracefully - don't crash the app
+      // Using axiosInstance directly means no error toast will be shown
+      if (error?.response?.status === 404) {
+        console.log("⚠️ Session endpoint not found (404) - this is expected if endpoint doesn't exist");
+        console.log("📝 Will use existing localStorage data for persona and mode_id");
+      } else {
+        console.warn("⚠️ Error fetching session data (non-404):", error?.response?.status || error?.message);
+      }
+      // Return null to indicate we should use localStorage data
+      return null;
+    }
+  }, [sessions]);
+
   useEffect(() => {
     if (typeof window !== "undefined") {
-      let sessionId = localStorage.getItem("session_id");
-      let persona_data = localStorage.getItem("persona_data");
-      if (persona_data) {
-        let parse_persona_data = JSON.parse(persona_data);
-        if (parse_persona_data?.industry) {
-          setPersonaData(parse_persona_data);
+      // Check if session_id, persona_data, token, and voice_id are coming from URL query parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlSessionId = urlParams.get('session_id');
+      const urlPersonaData = urlParams.get('persona_data');
+      const urlToken = urlParams.get('token') || urlParams.get('bearer_token') || urlParams.get('auth_token');
+      const urlVoiceId = urlParams.get('voice_id');
+      
+      let sessionId;
+      let shouldFetchFromAPI = false;
+      let personaDataFromURL = null;
+      
+      // If voice_id is in URL, save it to localStorage immediately
+      if (urlVoiceId) {
+        console.log("📥 Voice ID found in URL, saving to localStorage:", urlVoiceId);
+        localStorage.setItem("voice_id", urlVoiceId);
+        console.log("✅ Voice ID stored in localStorage");
+      }
+      
+      // If token is in URL, save it to localStorage and Redux state immediately
+      if (urlToken) {
+        console.log("📥 Bearer token found in URL, saving to localStorage and Redux");
+        localStorage.setItem("token", urlToken);
+        dispatch(AddAuth(urlToken)); // Update Redux state
+        console.log("✅ Token stored in localStorage and Redux state");
+        
+        // Fetch user data using the token
+        const fetchUserData = async () => {
+          try {
+            console.log("🔍 Fetching user data with token from URL");
+            const userData = await Get(auth_me);
+            if (userData) {
+              console.log("✅ User data fetched successfully:", userData);
+              dispatch(AddUser(userData)); // Update Redux state with user data
+              
+              // Also store user_id in localStorage if available
+              if (userData?.user_id) {
+                localStorage.setItem("user", userData.user_id);
+                console.log("✅ User ID stored in localStorage:", userData.user_id);
+              }
+            }
+          } catch (error) {
+            console.error("❌ Error fetching user data:", error);
+            // If token is invalid, remove it
+            if (error?.response?.status === 401 || error?.response?.status === 403) {
+              console.log("⚠️ Invalid token, removing from storage");
+              localStorage.removeItem("token");
+              dispatch(AddAuth(""));
+            }
+          }
+        };
+        
+        // Fetch user data asynchronously
+        fetchUserData();
+      }
+      
+      // If persona_data is in URL, decode and parse it first
+      if (urlPersonaData) {
+        try {
+          // Decode URL-encoded JSON string
+          const decodedPersonaData = decodeURIComponent(urlPersonaData);
+          personaDataFromURL = JSON.parse(decodedPersonaData);
+          console.log("📥 Persona data found in URL, parsed successfully:", personaDataFromURL);
+          
+          // If voice_id is in URL, add it to persona_data if not already present
+          if (urlVoiceId && !personaDataFromURL.voice_id) {
+            personaDataFromURL.voice_id = urlVoiceId;
+            console.log("✅ Voice ID added to persona_data from URL:", urlVoiceId);
+          }
+          
+          // Store persona data in localStorage immediately
+          localStorage.setItem("persona_data", JSON.stringify(personaDataFromURL));
+          if (personaDataFromURL?.persona_id) {
+            localStorage.setItem("persona_id", personaDataFromURL.persona_id);
+          }
+          
+          // Extract and store voice_id if present in persona_data
+          if (personaDataFromURL?.voice_id) {
+            localStorage.setItem("voice_id", personaDataFromURL.voice_id);
+            console.log("✅ Voice ID stored from URL persona_data:", personaDataFromURL.voice_id);
+          }
+          
+          // Extract and store mode_id if present in persona_data
+          if (personaDataFromURL?.mode_id) {
+            localStorage.setItem("mode_id", personaDataFromURL.mode_id);
+            console.log("✅ Mode ID stored from URL persona_data:", personaDataFromURL.mode_id);
+          }
+          
+          // Set persona data in state
+          setPersonaData(personaDataFromURL);
+        } catch (e) {
+          console.error("❌ Error parsing persona_data from URL:", e);
+        }
+      } else if (urlVoiceId) {
+        // If voice_id is in URL but persona_data is not, try to get existing persona_data and update it
+        let existingPersonaData = localStorage.getItem("persona_data");
+        if (existingPersonaData) {
+          try {
+            let parsedPersonaData = JSON.parse(existingPersonaData);
+            parsedPersonaData.voice_id = urlVoiceId;
+            localStorage.setItem("persona_data", JSON.stringify(parsedPersonaData));
+            localStorage.setItem("voice_id", urlVoiceId);
+            setPersonaData(parsedPersonaData);
+            console.log("✅ Voice ID added to existing persona_data from URL:", urlVoiceId);
+          } catch (e) {
+            console.error("❌ Error updating existing persona_data with voice_id:", e);
+          }
         }
       }
+      
+      // If session_id is in URL, save it to localStorage immediately
+      if (urlSessionId) {
+        console.log("📥 Session ID found in URL, saving to localStorage:", urlSessionId);
+        localStorage.setItem("session_id", urlSessionId);
+        sessionId = urlSessionId;
+        
+        // Only fetch from API if persona_data was not in URL
+        // If persona_data is in URL, we already have it, but still fetch to get mode_id if missing
+        if (!personaDataFromURL) {
+          shouldFetchFromAPI = true;
+        } else {
+          // Even if persona_data is in URL, fetch to ensure we have latest data and mode_id
+          shouldFetchFromAPI = true;
+          console.log("📥 Persona data from URL, but will also fetch from API to ensure completeness");
+        }
+      } else {
+        // Otherwise, get from localStorage
+        sessionId = localStorage.getItem("session_id");
+        // Also fetch from API if session_id exists in localStorage
+        // This ensures persona data is always up-to-date
+        if (sessionId) {
+          shouldFetchFromAPI = true;
+          console.log("📥 Session ID found in localStorage, will fetch persona data:", sessionId);
+        }
+      }
+      
+      // Process session_id for chat
       if (sessionId) {
+        console.log("✅ Processing session ID for chat:", sessionId);
         setSession_id(sessionId);
+        
+        // Fetch persona data from session API if needed
+        // Skip if we already got it from URL and it's complete
+        if (shouldFetchFromAPI) {
+          fetchPersonaDataFromSession(sessionId).then((personaData) => {
+            // If we got persona data from API, it will override URL data (more up-to-date)
+            if (personaData) {
+              console.log("✅ Persona data fetched from API, overriding URL data");
+            } else {
+              // Fallback to localStorage if fetch fails
+              if (!personaDataFromURL) {
+                console.log("📝 API fetch failed or returned no data, using localStorage persona data");
+      let persona_data = localStorage.getItem("persona_data");
+      if (persona_data) {
+                  try {
+        let parse_persona_data = JSON.parse(persona_data);
+                    if (parse_persona_data?.industry || parse_persona_data?.persona_id) {
+          setPersonaData(parse_persona_data);
+                      console.log("✅ Using persona data from localStorage");
+                    }
+                  } catch (e) {
+                    console.error("❌ Error parsing persona_data from localStorage:", e);
+                  }
+                }
+              } else {
+                console.log("✅ Using persona data from URL (API fetch failed)");
+              }
+            }
+          });
+        } else if (!personaDataFromURL) {
+          // If no session ID and no URL persona_data, try to use localStorage persona data
+          let persona_data = localStorage.getItem("persona_data");
+          if (persona_data) {
+            try {
+              let parse_persona_data = JSON.parse(persona_data);
+              if (parse_persona_data?.industry || parse_persona_data?.persona_id) {
+                setPersonaData(parse_persona_data);
+                console.log("✅ Using persona data from localStorage (no session ID)");
+              }
+            } catch (e) {
+              console.error("❌ Error parsing persona_data from localStorage:", e);
+            }
+          }
+        }
+      } else {
+        // No session ID, try to get persona data from localStorage anyway
+        if (!personaDataFromURL) {
+          let persona_data = localStorage.getItem("persona_data");
+          if (persona_data) {
+            try {
+              let parse_persona_data = JSON.parse(persona_data);
+              if (parse_persona_data?.industry || parse_persona_data?.persona_id) {
+                setPersonaData(parse_persona_data);
+                console.log("✅ Using persona data from localStorage (no session ID available)");
+              }
+            } catch (e) {
+              console.error("❌ Error parsing persona_data from localStorage:", e);
+            }
+          }
+        }
       }
     }
-  }, []);
+  }, [router.query, fetchPersonaDataFromSession]);
 
   // Old webkitSpeechRecognition initialization removed - now using useSpeechToText hook
 
@@ -730,11 +1006,13 @@ const Chat = ({ slug, children }) => {
     setIsChatPosting(true); // Start loading
     
     try {
-      // Connect to ElevenLabs if not already connected
+      // Ensure ElevenLabs is connected (but don't block the API request)
+      // The WebSocket can connect in parallel while we make the API request
       if (!isElevenLabsConnected) {
         console.log("Connecting to ElevenLabs for streaming response...");
         connectElevenLabs();
-        // await new Promise((resolve) => setTimeout(resolve, 1000));
+        // Don't wait - let the connection happen in parallel with the API request
+        // The WebSocket will be ready by the time we need to send audio chunks
       }
 
       // Single context ID for this conversation turn
@@ -753,7 +1031,8 @@ const Chat = ({ slug, children }) => {
       // Get API base URL
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
       
-      // Make streaming request
+      // Make streaming request immediately - no delay
+      console.log(`📡 Sending request to: ${apiUrl}${chat_chat}/${session_id}/stream-events`);
       const response = await fetch(`${apiUrl}${chat_chat}/${session_id}/stream-events`, {
         method: 'POST',
         headers: {
@@ -834,6 +1113,8 @@ const Chat = ({ slug, children }) => {
                   console.log(`   Length: ${newTextToSend.length} chars (Previously sent: ${sentTextToElevenLabs.length}, Total: ${fullResponse.length})`);
                   
                   // Send ONLY the new incremental text
+                  // Note: streamTextChunk will check WebSocket connection internally
+                  // If not connected, it will log an error but won't crash
                   streamTextChunk(newTextToSend, contextId, false);
                   
                   // Update what we've sent
@@ -1069,28 +1350,11 @@ const Chat = ({ slug, children }) => {
     try {
       // Create a silent audio context to unlock audio on mobile
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      
-      // // Ensure context is running (iOS starts in suspended state)
-      // if (ctx.state === 'suspended') {
-      //   await ctx.resume();
-      //   console.log('✅ AudioContext resumed in handlePrimeAudio (iOS compatibility)');
-      // }
       const buffer = ctx.createBuffer(1, 1, 22050);
       const source = ctx.createBufferSource();
       source.buffer = buffer;
       source.connect(ctx.destination);
       source.start(0);
-
-      // // Wait for the silent audio to complete to ensure audio is fully primed
-      // await new Promise((resolve) => {
-      //   source.onended = () => {
-      //     console.log('✅ Silent audio completed - audio system primed');
-      //     resolve();
-      //   };
-      // });
-      
-      // // Clean up the temporary context
-      // await ctx.close();
       
       setAudioPrimed(true);
       setShowAudioPrompt(false);
@@ -1343,7 +1607,7 @@ const Chat = ({ slug, children }) => {
                       onChange={(e) => setChecked(e.target.checked)}
                       sx={{
                         "& .MuiSwitch-track": {
-                          backgroundColor: checked ? "#FFDE5A !important": "#767577 !important",
+                          backgroundColor: checked ? "#FFDE5A !important" : "#808080 !important",
                         },
                       }}
                     />
