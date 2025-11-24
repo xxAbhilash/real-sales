@@ -47,7 +47,30 @@ const IndustrySelectionModal = () => {
 
   const capitalize = (str) => {
     if (!str) return "";
-    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+    return str
+      .replace(/_/g, " ")
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(" ");
+  };
+
+  const getIndustryDescription = (industry) => {
+    if (!industry?.name) return industry?.description || "";
+    
+    const industryName = industry.name.toLowerCase().trim();
+    
+    // Check for food_and_beverage_manufacturing
+    if (industryName === "food_and_beverage_manufacturing" || 
+        industryName === "food and beverage manufacturing") {
+      return "(You are selling to Production Plants)";
+    }
+    
+    // Check for Healthcare
+    if (industryName === "healthcare" || industryName === "health_care") {
+      return "(You are selling to Hospitals)";
+    }
+    
+    return industry?.description || "";
   };
 
   const handleProceed = () => {
@@ -73,11 +96,11 @@ const IndustrySelectionModal = () => {
       >
         <div className="flex flex-col gap-4 items-start">
           <div className="flex flex-col items-start">
-            <h2 className="lg:text-[22px] text-[16px] m-plus-rounded-1c-regular text-[#060606] w-full flex items-center justify-start">
+            <h2 className="lg:text-[32px] text-[20px] m-plus-rounded-1c-regular text-[#060606] w-full flex items-center justify-start">
               Choose your Desired Industry
             </h2>
-            <p className="lg:text-[30px] text-[16px] m-plus-rounded-1c-regular text-[#060606E5]">
-              (Choose any one):
+            <p className="lg:text-[20px] text-[15px] m-plus-rounded-1c-regular text-[#060606E5]">
+              (Select The Industry segment you are selling to):
             </p>
           </div>
 
@@ -104,11 +127,11 @@ const IndustrySelectionModal = () => {
                       </div>
                       <div className="flex-1">
                         <h1 className="m-plus-rounded-1c-medium lg:text-xl text-lg text-[#060606]">
-                          {capitalize(industry?.name?.replace(/_/g, " "))}
+                          {capitalize(industry?.name)}
                         </h1>
-                        {industry?.description && (
+                        {getIndustryDescription(industry) && (
                           <p className="sora-regular text-gray-600 lg:text-[14px] text-[12px] mt-1">
-                            {industry.description}
+                            {getIndustryDescription(industry)}
                           </p>
                         )}
                       </div>
