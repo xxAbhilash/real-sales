@@ -1061,6 +1061,9 @@ const Chat = ({ slug, children }) => {
                 if (errorData.detail.includes('Session duration limit exceeded')) {
                   showToast.error('Session duration limit exceeded. Your subscription allows maximum 15 minutes per session.');
                   throw new Error('Session duration limit exceeded');
+                } else if (errorData.detail.includes('This session is already completed')) {
+                  showToast.error('This session is already completed. Please create a new session to continue chatting.');
+                  throw new Error('This session is already completed');
                 }
                 errorMessage = errorData.detail;
               }
@@ -1069,6 +1072,9 @@ const Chat = ({ slug, children }) => {
               if (errorText.includes('Session duration limit exceeded')) {
                 showToast.error('Session duration limit exceeded. Your subscription allows maximum 15 minutes per session.');
                 throw new Error('Session duration limit exceeded');
+              } else if (errorText.includes('This session is already completed')) {
+                showToast.error('This session is already completed. Please create a new session to continue chatting.');
+                throw new Error('This session is already completed');
               }
             }
           }
@@ -1206,14 +1212,16 @@ const Chat = ({ slug, children }) => {
     } catch (error) {
       console.error('❌ Error in streaming chat:', error);
       
-      // Check if it's a session duration limit error (already handled above)
-      if (error?.message && error.message.includes('Session duration limit exceeded')) {
+      // Check if it's a session duration limit or session completed error (already handled above)
+      if (error?.message && (error.message.includes('Session duration limit exceeded') || error.message.includes('This session is already completed'))) {
         // Toast already shown above, just update UI state
       } else {
-        // Check error message for session duration limit
+        // Check error message for session duration limit or session completed
         const errorMessage = error?.message || '';
         if (errorMessage.includes('Session duration limit exceeded')) {
           showToast.error('Session duration limit exceeded. Your subscription allows maximum 15 minutes per session.');
+        } else if (errorMessage.includes('This session is already completed')) {
+          showToast.error('This session is already completed. Please create a new session to continue chatting.');
         } else {
           showToast.error('Failed to send message. Please try again.');
         }

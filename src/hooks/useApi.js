@@ -51,7 +51,12 @@ const Get = async (url) => {
     // Check for session duration limit error
     if (errorDetail && typeof errorDetail === 'string' && errorDetail.includes('Session duration limit exceeded')) {
       showToast.error('Session duration limit exceeded. Your subscription allows maximum 15 minutes per session.');
-    } else {
+    } 
+    // Check for session already completed error
+    else if (errorDetail && typeof errorDetail === 'string' && errorDetail.includes('This session is already completed')) {
+      showToast.error('This session is already completed. Please create a new session to continue chatting.');
+    } 
+    else {
       showToast.error(errorDetail);
     }
     
@@ -81,7 +86,12 @@ const Post = async (url, meta) => {
     // Check for session duration limit error
     if (errorDetail && typeof errorDetail === 'string' && errorDetail.includes('Session duration limit exceeded')) {
       showToast.error('Session duration limit exceeded. Your subscription allows maximum 15 minutes per session.');
-    } else {
+    } 
+    // Check for session already completed error
+    else if (errorDetail && typeof errorDetail === 'string' && errorDetail.includes('This session is already completed')) {
+      showToast.error('This session is already completed. Please create a new session to continue chatting.');
+    } 
+    else {
       showToast.error(errorDetail);
     }
     
@@ -111,7 +121,12 @@ const Put = async (url, meta) => {
     // Check for session duration limit error
     if (errorDetail && typeof errorDetail === 'string' && errorDetail.includes('Session duration limit exceeded')) {
       showToast.error('Session duration limit exceeded. Your subscription allows maximum 15 minutes per session.');
-    } else {
+    } 
+    // Check for session already completed error
+    else if (errorDetail && typeof errorDetail === 'string' && errorDetail.includes('This session is already completed')) {
+      showToast.error('This session is already completed. Please create a new session to continue chatting.');
+    } 
+    else {
       showToast.error(errorDetail);
     }
     
@@ -141,7 +156,12 @@ const Delete = async (url, meta) => {
     // Check for session duration limit error
     if (errorDetail && typeof errorDetail === 'string' && errorDetail.includes('Session duration limit exceeded')) {
       showToast.error('Session duration limit exceeded. Your subscription allows maximum 15 minutes per session.');
-    } else {
+    } 
+    // Check for session already completed error
+    else if (errorDetail && typeof errorDetail === 'string' && errorDetail.includes('This session is already completed')) {
+      showToast.error('This session is already completed. Please create a new session to continue chatting.');
+    } 
+    else {
       showToast.error(errorDetail);
     }
     
