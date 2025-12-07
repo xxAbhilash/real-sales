@@ -46,8 +46,15 @@ const Get = async (url) => {
       return data?.data;
     }
   } catch (error) {
-    const errorMessage = error?.response?.data?.detail || error?.message || 'Request failed';
-    showToast.error(errorMessage);
+    const errorDetail = error?.response?.data?.detail || error?.message || 'Request failed';
+    
+    // Check for session duration limit error
+    if (errorDetail && typeof errorDetail === 'string' && errorDetail.includes('Session duration limit exceeded')) {
+      showToast.error('Session duration limit exceeded. Your subscription allows maximum 15 minutes per session.');
+    } else {
+      showToast.error(errorDetail);
+    }
+    
     throw error; // Re-throw to allow calling code to handle
   }
 };
@@ -69,8 +76,15 @@ const Post = async (url, meta) => {
       return data?.data;
     }
   } catch (error) {
-    const errorMessage = error?.response?.data?.detail || error?.message || 'Request failed';
-    showToast.error(errorMessage);
+    const errorDetail = error?.response?.data?.detail || error?.message || 'Request failed';
+    
+    // Check for session duration limit error
+    if (errorDetail && typeof errorDetail === 'string' && errorDetail.includes('Session duration limit exceeded')) {
+      showToast.error('Session duration limit exceeded. Your subscription allows maximum 15 minutes per session.');
+    } else {
+      showToast.error(errorDetail);
+    }
+    
     throw error; // Re-throw to allow calling code to handle
   }
 };
@@ -92,8 +106,15 @@ const Put = async (url, meta) => {
       return data?.data;
     }
   } catch (error) {
-    const errorMessage = error?.response?.data?.detail || error?.message || 'Request failed';
-    showToast.error(errorMessage);
+    const errorDetail = error?.response?.data?.detail || error?.message || 'Request failed';
+    
+    // Check for session duration limit error
+    if (errorDetail && typeof errorDetail === 'string' && errorDetail.includes('Session duration limit exceeded')) {
+      showToast.error('Session duration limit exceeded. Your subscription allows maximum 15 minutes per session.');
+    } else {
+      showToast.error(errorDetail);
+    }
+    
     throw error; // Re-throw to allow calling code to handle
   }
 };
@@ -115,8 +136,15 @@ const Delete = async (url, meta) => {
       return data?.data;
     }
   } catch (error) {
-    const errorMessage = error?.response?.data?.detail || error?.message || 'Request failed';
-    showToast.error(errorMessage);
+    const errorDetail = error?.response?.data?.detail || error?.message || 'Request failed';
+    
+    // Check for session duration limit error
+    if (errorDetail && typeof errorDetail === 'string' && errorDetail.includes('Session duration limit exceeded')) {
+      showToast.error('Session duration limit exceeded. Your subscription allows maximum 15 minutes per session.');
+    } else {
+      showToast.error(errorDetail);
+    }
+    
     throw error; // Re-throw to allow calling code to handle
   }
 };

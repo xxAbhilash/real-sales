@@ -1050,7 +1050,32 @@ const Chat = ({ slug, children }) => {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        // Try to parse error response for session duration limit
+        let errorMessage = `HTTP error! status: ${response.status}`;
+        try {
+          const errorText = await response.clone().text();
+          if (errorText) {
+            try {
+              const errorData = JSON.parse(errorText);
+              if (errorData?.detail && typeof errorData.detail === 'string') {
+                if (errorData.detail.includes('Session duration limit exceeded')) {
+                  showToast.error('Session duration limit exceeded. Your subscription allows maximum 15 minutes per session.');
+                  throw new Error('Session duration limit exceeded');
+                }
+                errorMessage = errorData.detail;
+              }
+            } catch (jsonError) {
+              // If it's not JSON, check if the text itself contains the error
+              if (errorText.includes('Session duration limit exceeded')) {
+                showToast.error('Session duration limit exceeded. Your subscription allows maximum 15 minutes per session.');
+                throw new Error('Session duration limit exceeded');
+              }
+            }
+          }
+        } catch (parseError) {
+          // If parsing fails, continue with default error
+        }
+        throw new Error(errorMessage);
       }
 
       // Read streaming response
@@ -1180,7 +1205,20 @@ const Chat = ({ slug, children }) => {
 
     } catch (error) {
       console.error('❌ Error in streaming chat:', error);
-      showToast.error('Failed to send message. Please try again.');
+      
+      // Check if it's a session duration limit error (already handled above)
+      if (error?.message && error.message.includes('Session duration limit exceeded')) {
+        // Toast already shown above, just update UI state
+      } else {
+        // Check error message for session duration limit
+        const errorMessage = error?.message || '';
+        if (errorMessage.includes('Session duration limit exceeded')) {
+          showToast.error('Session duration limit exceeded. Your subscription allows maximum 15 minutes per session.');
+        } else {
+          showToast.error('Failed to send message. Please try again.');
+        }
+      }
+      
       setIsAiThinking(false);
       setIsAiSpeaking(false);
     } finally {
