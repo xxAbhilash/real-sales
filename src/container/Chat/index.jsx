@@ -1848,7 +1848,7 @@ const Chat = ({ slug, children }) => {
                                 </div>
                               ) : isUploading ? (
                                 <div className="w-full flex items-center justify-center">
-                                  <div class="h-8 w-8 rounded-full border-4 border-gray-300 border-t-yellow-500 animate-spin"></div>
+                                  <div className="h-8 w-8 rounded-full border-4 border-gray-300 border-t-yellow-500 animate-spin"></div>
                                 </div>
                               ) : (
                                 <div
@@ -2045,7 +2045,7 @@ const Chat = ({ slug, children }) => {
                                 {/* OLD: Spinner animation (commented out)
                                 {isChatPosting ? (
                                   <div className="w-full flex items-center justify-center">
-                                    <div class="h-12 w-12 rounded-full border-8 border-white border-t-[#FFE942] animate-spin"></div>
+                                    <div className="h-12 w-12 rounded-full border-8 border-white border-t-[#FFE942] animate-spin"></div>
                                   </div>
                                 ) : (
                                   <Image
@@ -2171,7 +2171,7 @@ const Chat = ({ slug, children }) => {
                             {/* AI */}
                             <div className="relative backdrop-blur-[5px] shadow-[0px_10px_30px_0px_#00000033] bg-[#FFFFFF05] overflow-hidden rounded-[10px] p-2.5">
                               <div className="bg-[url(../../public/assets/images/RealSales-user-images/persona-plant.png)] w-80 h-44 bg-cover bg-no-repeat rounded-[10px]" />
-                              <div class="bg-[linear-gradient(0deg,rgba(0,0,0,0)_0%,rgba(0,0,0,0.4)_70%)] absolute top-2.5 left-2.5 right-2.5 rounded-t-[10px] z-10 px-4 py-2 flex gap-2">
+                              <div className="bg-[linear-gradient(0deg,rgba(0,0,0,0)_0%,rgba(0,0,0,0.4)_70%)] absolute top-2.5 left-2.5 right-2.5 rounded-t-[10px] z-10 px-4 py-2 flex gap-2">
                                 <CustomTooltip
                                   title={micAi ? "Mute" : "Muted"}
                                   placement="right"
@@ -2196,7 +2196,7 @@ const Chat = ({ slug, children }) => {
                                   />
                                 ) : null}
                               </div>
-                              <div class="bg-[linear-gradient(180deg,rgba(0,0,0,0)_0%,rgba(0,0,0,0.4)_70%)] absolute bottom-2.5 left-2.5 right-2.5 rounded-t-[10px] z-10 px-4 py-2 flex gap-2">
+                              <div className="bg-[linear-gradient(180deg,rgba(0,0,0,0)_0%,rgba(0,0,0,0.4)_70%)] absolute bottom-2.5 left-2.5 right-2.5 rounded-t-[10px] z-10 px-4 py-2 flex gap-2">
                                 <div className="backdrop-blur-[10px] py-2 px-4 w-full rounded-[10px] flex items-center gap-4 overflow-hidden">
                                   <div className="border border-solid border-white rounded-full w-10 h-10 p-0.5">
                                     <Image
@@ -2219,7 +2219,7 @@ const Chat = ({ slug, children }) => {
                             {/* user */}
                             <div className="relative backdrop-blur-[5px] shadow-[0px_10px_30px_0px_#00000033] bg-[#FFFFFF05] overflow-hidden rounded-[10px] p-2.5">
                               <div className="bg-[url(../../public/assets/images/RealSales-user-images/persona-plant.png)] w-80 h-44 bg-cover bg-no-repeat rounded-[10px]" />
-                              <div class="bg-[linear-gradient(0deg,rgba(0,0,0,0)_0%,rgba(0,0,0,0.4)_70%)] absolute top-2.5 left-2.5 right-2.5 rounded-t-[10px] z-10 px-4 py-2 flex gap-2">
+                              <div className="bg-[linear-gradient(0deg,rgba(0,0,0,0)_0%,rgba(0,0,0,0.4)_70%)] absolute top-2.5 left-2.5 right-2.5 rounded-t-[10px] z-10 px-4 py-2 flex gap-2">
                                 <CustomTooltip
                                   title={micUser ? "Mute" : "Muted"}
                                   placement="right"
@@ -2244,7 +2244,7 @@ const Chat = ({ slug, children }) => {
                                   />
                                 ) : null}
                               </div>
-                              <div class="bg-[linear-gradient(180deg,rgba(0,0,0,0)_0%,rgba(0,0,0,0.4)_70%)] absolute bottom-2.5 left-2.5 right-2.5 rounded-t-[10px] z-10 px-4 py-2 flex gap-2">
+                              <div className="bg-[linear-gradient(180deg,rgba(0,0,0,0)_0%,rgba(0,0,0,0.4)_70%)] absolute bottom-2.5 left-2.5 right-2.5 rounded-t-[10px] z-10 px-4 py-2 flex gap-2">
                                 <div className="backdrop-blur-[10px] py-2 px-4 w-full rounded-[10px] flex items-center gap-4 overflow-hidden">
                                   <div className="border border-solid border-white rounded-full w-10 h-10 p-0.5">
                                     <Image
@@ -2299,7 +2299,7 @@ const Chat = ({ slug, children }) => {
                         >
                           {isUploading ? (
                             <div className="w-full flex items-center justify-center">
-                              <div class="h-[18px] w-[18px] rounded-full border-2 border-[#666666] border-t-[#000000] animate-spin"></div>
+                              <div className="h-[18px] w-[18px] rounded-full border-2 border-[#666666] border-t-[#000000] animate-spin"></div>
                             </div>
                           ) : (
                             <AttachFileIcon className="text-[#333333] !text-[20px] lg:!text-[22px]" />
@@ -2528,7 +2528,7 @@ const Chat = ({ slug, children }) => {
                         <div className="flex flex-col gap-2 p-4">
                           <div className="relative flex items-center justify-start">
                             <div className="w-10 h-10 bg-[#14558C] rounded-full" />
-                            <p class="absolute left-1 rounded-[5px] bg-[linear-gradient(90deg,#14558C_0%,#5586B0_100%)] w-fit sora-regular text-sm text-white px-3 py-1 capitalize">
+                            <p className="absolute left-1 rounded-[5px] bg-[linear-gradient(90deg,#14558C_0%,#5586B0_100%)] w-fit sora-regular text-sm text-white px-3 py-1 capitalize">
                               Response Tips
                             </p>
                           </div>
@@ -2550,7 +2550,7 @@ const Chat = ({ slug, children }) => {
                             </div>
                           </div>
                         </div>
-                        <p class="absolute right-0 top-4 bg-[linear-gradient(90deg,rgba(38,173,53,0.8)_0%,rgba(38,173,53,0)_100%)] w-fit sora-regular text-[12px] text-white px-2.5 py-1 capitalize">
+                        <p className="absolute right-0 top-4 bg-[linear-gradient(90deg,rgba(38,173,53,0.8)_0%,rgba(38,173,53,0)_100%)] w-fit sora-regular text-[12px] text-white px-2.5 py-1 capitalize">
                           Acknowledged
                         </p>
                       </div> */}
@@ -2580,7 +2580,7 @@ const Chat = ({ slug, children }) => {
                                         } rounded-full`}
                                       />
                                       <p
-                                        class={`absolute left-1 rounded-[5px] ${
+                                        className={`absolute left-1 rounded-[5px] ${
                                           idx % 2 === 0
                                             ? "bg-[linear-gradient(90deg,#26AD35_0%,#077A15_100%)]"
                                             : "bg-[linear-gradient(90deg,#E59E2C_0%,#A36B12_100%)]"
@@ -2635,7 +2635,7 @@ const Chat = ({ slug, children }) => {
                                               { id: v?.id },
                                             ])
                                           }
-                                          class="bg-[linear-gradient(90deg,#26AD35_0%,#0C7618_100%)] flex items-center gap-1 px-2 pt-0.5 pb-1 rounded-full w-fit cursor-pointer"
+                                          className="bg-[linear-gradient(90deg,#26AD35_0%,#0C7618_100%)] flex items-center gap-1 px-2 pt-0.5 pb-1 rounded-full w-fit cursor-pointer"
                                         >
                                           <p className="text-white text-[12px]">
                                             Check
@@ -2650,7 +2650,7 @@ const Chat = ({ slug, children }) => {
                                               )
                                             );
                                           }}
-                                          class="bg-[linear-gradient(90deg,#CF2427_0%,#ED3B3E_100%)] flex items-center gap-1 px-2 pt-0.5 pb-1 rounded-full w-fit cursor-pointer"
+                                          className="bg-[linear-gradient(90deg,#CF2427_0%,#ED3B3E_100%)] flex items-center gap-1 px-2 pt-0.5 pb-1 rounded-full w-fit cursor-pointer"
                                         >
                                           <p className="text-white text-[12px]">
                                             Ignore
@@ -2661,7 +2661,7 @@ const Chat = ({ slug, children }) => {
                                     )}
                                   </div>
                                   <p
-                                    class={`absolute right-0 top-4 ${
+                                    className={`absolute right-0 top-4 ${
                                       coachingAccept.some(
                                         (val) => val?.id === v?.id
                                       )
@@ -2744,7 +2744,7 @@ const Chat = ({ slug, children }) => {
       {/* <Modal open={isChatPosting}>
         <Box className="h-screen w-full flex items-center justify-center">
           <div className="w-full flex items-center justify-center">
-            <div class="h-20 w-20 rounded-full border-8 border-white border-t-[#FFE942] animate-spin"></div>
+            <div className="h-20 w-20 rounded-full border-8 border-white border-t-[#FFE942] animate-spin"></div>
           </div>
         </Box>
       </Modal> */}
