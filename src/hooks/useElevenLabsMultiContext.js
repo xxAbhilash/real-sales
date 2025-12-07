@@ -467,7 +467,7 @@ const useElevenLabsMultiContext = ({
           // Re-check after processAudioQueue completes
           finalContextsRef.current.add(contextId);
         }
-      }, 2000); // 5 second fallback
+      }, 3000); // 5 second fallback
       
       contextTimeoutsRef.current.set(contextId, timer);
     }

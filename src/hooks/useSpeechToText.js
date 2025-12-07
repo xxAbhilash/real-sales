@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 
-const useSpeechToText = (onTranscriptReady, silenceThreshold = 2000) => {
+const useSpeechToText = (onTranscriptReady, silenceThreshold = 3000) => {
   const [isListening, setIsListening] = useState(false);
   const { 
     transcript, 
