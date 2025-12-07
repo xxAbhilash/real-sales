@@ -32,6 +32,12 @@ import cil_audio from "../../../public/assets/icons/cil_audio.svg";
 import BookAdemo from "../../common/bookAdemo";
 import ArrowRight from "../../../public/assets/icons/arrowRight";
 import MicNoneOutlinedIcon from "@mui/icons-material/MicNoneOutlined";
+import FlashAutoIcon from "@mui/icons-material/FlashAuto";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import LightbulbIcon from "@mui/icons-material/Lightbulb";
+import BoltIcon from "@mui/icons-material/Bolt";
+import GroupIcon from "@mui/icons-material/Group";
+import CheckIcon from "@mui/icons-material/Check";
 import callVibration from "../../../public/assets/images/RealSales-abstracts/call-vibration.png";
 import personaExtra from "../../../public/assets/images/RealSales-user-images/persona-extra.png";
 import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
@@ -234,6 +240,7 @@ const Chat = ({ slug, children }) => {
   const [fileError, setFileError] = useState("");
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [personaDetails, setPersonaDetails] = useState(null);
+  const [autoModeAnchorEl, setAutoModeAnchorEl] = useState(null);
   const [viewDoc, setViewDoc] = useState(false);
   const [width, setWidth] = useState(1366);
   const recentTranscriptsRef = useRef([]); // Keep last 5 transcripts with timestamps
@@ -328,7 +335,7 @@ const Chat = ({ slug, children }) => {
     isListening,
     startListening: startSpeechRecognition,
     stopListening: stopSpeechRecognition,
-  } = useSpeechToText(handleTranscriptReady, 2000);
+  } = useSpeechToText(handleTranscriptReady, 3000);
 
   // Keep ref in sync with state to avoid stale closures
   useEffect(() => {
@@ -1219,6 +1226,31 @@ const Chat = ({ slug, children }) => {
       toggleSpeechRecognition();
     }
   };
+
+  // Auto mode dropdown handlers
+  const handleAutoModeClick = (event) => {
+    setAutoModeAnchorEl(event.currentTarget);
+  };
+
+  const handleAutoModeClose = () => {
+    setAutoModeAnchorEl(null);
+  };
+
+  const handleAutoModeSelect = (enabled) => {
+    setIsAutoMode(enabled);
+    isAutoModeRef.current = enabled;
+    setTour(false);
+    handleAutoModeClose();
+    console.log(`🔄 Auto-mode ${enabled ? 'ENABLED' : 'DISABLED'}`);
+    
+    if (enabled && !isSpeaking && !isListening) {
+      // Start the conversation if enabling auto mode and not already active
+      console.log("🎤 Starting conversation in auto-mode");
+      toggleSpeechRecognition();
+    }
+  };
+
+  const isAutoModeDropdownOpen = Boolean(autoModeAnchorEl);
 
   const clearTranscript = () => {
     setTranscriptDummy("");
@@ -2249,30 +2281,216 @@ const Chat = ({ slug, children }) => {
                       </p>
                     </div>
                     <div className="w-full flex items-center gap-2">
-                      {/* <div className="w-10 h-10 bg-[#FFFFFF1A] rounded-full flex items-center justify-center cursor-pointer">
-                        <Image
-                          src={menueIcon}
-                          alt="menueIcon"
-                          className="w-4 h-auto"
+                      <div className="bg-[#ffffff8f] p-1.5 pl-2 lg:pl-3 pr-1.5 rounded-full flex items-center gap-2 lg:gap-3 flex-1 min-w-0 overflow-hidden">
+                        {/* Attachment icon on the left */}
+                        <div
+                          className={`flex items-center justify-center p-1.5 rounded-full transition-colors flex-shrink-0 ${
+                            addDocText?.summary
+                              ? "bg-[#FFE942] hover:bg-[#ffdc42]"
+                              : "hover:bg-[#00000008]"
+                          } ${
+                            isAiSpeaking
+                              ? "cursor-not-allowed opacity-50"
+                              : addDocText?.summary
+                              ? "cursor-not-allowed"
+                              : "cursor-pointer"
+                          }`}
+                          onClick={isAiSpeaking ? undefined : handleClick}
+                        >
+                          {isUploading ? (
+                            <div className="w-full flex items-center justify-center">
+                              <div class="h-[18px] w-[18px] rounded-full border-2 border-[#666666] border-t-[#000000] animate-spin"></div>
+                            </div>
+                          ) : (
+                            <AttachFileIcon className="text-[#333333] !text-[20px] lg:!text-[22px]" />
+                          )}
+                          <input
+                            type="file"
+                            ref={fileInputRef}
+                            className="hidden"
+                            accept=".doc,.docx,.pdf"
+                            onChange={handleFileChange}
+                            disabled={!addDocText?.summary ? false : true}
+                          />
+                        </div>
+                        
+                        {/* Input field in center */}
+                        <input
+                          disabled={isAiSpeaking}
+                          placeholder="What do you want to know?"
+                          className="border-0 outline-0 !py-1.5 !px-2 flex-1 text-[#1a1a1a] placeholder:text-[#666666] m-plus-rounded-1c-regular bg-transparent text-sm lg:text-base min-w-0"
+                          value={oneLineChatText}
+                          onChange={(e) => {
+                            setTour(false);
+                            setOneLineChatText(e.target.value);
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              // setOneLineChatText(e.target.value);
+                              // e.preventDefault();
+                              if (oneLineChatText?.length) {
+                                senChat();
+                              }
+                            }
+                          }}
                         />
-                      </div> */}
+                        
+                        {/* Auto button inside input bar */}
+                        <div className="flex-shrink-0">
+                          <div
+                            className={`px-2 lg:px-3 py-1.5 relative rounded-full flex items-center gap-1 lg:gap-1.5 cursor-pointer transition-all ${
+                              isAutoMode 
+                                ? "bg-[#26AD35] hover:bg-[#22a030] shadow-sm" 
+                                : "bg-[#E5E5E5] hover:bg-[#D5D5D5]"
+                            }`}
+                            onClick={handleAutoModeClick}
+                          >
+                            <FlashAutoIcon
+                              className={`${
+                                isAutoMode ? "text-white" : "text-[#666666]"
+                              } !text-[16px] lg:!text-[18px]`}
+                            />
+                            <span className={`text-xs lg:text-sm font-medium hidden sm:inline ${
+                              isAutoMode ? "text-white" : "text-[#666666]"
+                            }`}>
+                              Auto
+                            </span>
+                            <ArrowDropDownIcon
+                              className={`${
+                                isAutoMode ? "text-white" : "text-[#666666]"
+                              } !text-[14px] lg:!text-[16px]`}
+                            />
+                          </div>
+                          <Popover
+                            open={isAutoModeDropdownOpen}
+                            anchorEl={autoModeAnchorEl}
+                            onClose={handleAutoModeClose}
+                            anchorOrigin={{
+                              vertical: "top",
+                              horizontal: "right",
+                            }}
+                            transformOrigin={{
+                              vertical: "bottom",
+                              horizontal: "right",
+                            }}
+                            PaperProps={{
+                              sx: {
+                                backgroundColor: "#ffffff",
+                                color: "#060606",
+                                borderRadius: "12px",
+                                minWidth: "280px",
+                                marginTop: "8px",
+                                boxShadow: "0px 8px 24px rgba(0, 0, 0, 0.15)",
+                                border: "1px solid rgba(0, 0, 0, 0.1)",
+                              },
+                            }}
+                          >
+                            <div className="py-2">
+                              {/* Auto Mode Option */}
+                              <div
+                                onClick={() => handleAutoModeSelect(true)}
+                                className={`px-4 py-3 flex items-center gap-3 cursor-pointer hover:bg-[#F5F5F5] transition-colors ${
+                                  isAutoMode ? "bg-[#F5F5F5]" : ""
+                                }`}
+                              >
+                                <FlashAutoIcon className={`${isAutoMode ? "text-[#26AD35]" : "text-[#666666]"} !text-[20px]`} />
+                                <div className="flex-1">
+                                  <div className={`${isAutoMode ? "text-[#060606]" : "text-[#333333]"} font-medium text-sm`}>Auto</div>
+                                  <div className="text-[#666666] text-xs mt-0.5">
+                                    Mic auto-starts after AI speaks
+                                  </div>
+                                </div>
+                                {isAutoMode && (
+                                  <CheckIcon className="text-[#26AD35] !text-[18px]" />
+                                )}
+                              </div>
+
+                              {/* Manual Mode Option */}
+                              <div
+                                onClick={() => handleAutoModeSelect(false)}
+                                className={`px-4 py-3 flex items-center gap-3 cursor-pointer hover:bg-[#F5F5F5] transition-colors ${
+                                  !isAutoMode ? "bg-[#F5F5F5]" : ""
+                                }`}
+                              >
+                                <MicNoneOutlinedIcon className={`${!isAutoMode ? "text-[#666666]" : "text-[#666666]"} !text-[20px]`} />
+                                <div className="flex-1">
+                                  <div className={`${!isAutoMode ? "text-[#060606]" : "text-[#333333]"} font-medium text-sm`}>Manual</div>
+                                  <div className="text-[#666666] text-xs mt-0.5">
+                                    Click mic to respond
+                                  </div>
+                                </div>
+                                {!isAutoMode && (
+                                  <CheckIcon className="text-[#666666] !text-[18px]" />
+                                )}
+                              </div>
+                            </div>
+                          </Popover>
+                        </div>
+                        
+                        {/* Send button on far right */}
+                        <div
+                          onClick={() => {
+                            if (isAiSpeaking) {
+                              undefined;
+                            } else {
+                              if (oneLineChatText?.length) {
+                                senChat();
+                              }
+                            }
+                          }}
+                          className={`flex items-center justify-center w-8 h-8 lg:w-9 lg:h-9 rounded-full transition-all flex-shrink-0 ${
+                            oneLineChatText?.length > 0
+                              ? "bg-[#FFE942] hover:bg-[#ffdc42]"
+                              : "bg-[#E5E5E5] hover:bg-[#D5D5D5]"
+                          } ${
+                            isAiSpeaking
+                              ? "cursor-not-allowed opacity-50"
+                              : "cursor-pointer active:scale-95"
+                          }`}
+                        >
+                          <ArrowUpwardIcon className={`${oneLineChatText?.length > 0 ? "text-[#060606]" : "text-[#333333]"} !text-[18px] lg:!text-[20px]`} />
+                        </div>
+                        
+                        {/* End Call button inside input bar for mobile */}
+                        <CustomTooltip
+                          title={"End Call"}
+                          placement="top"
+                          arrow
+                        >
+                          <div
+                            className={`p-[11px] bg-[#FE0000] rounded-full flex items-center justify-center cursor-pointer hover:bg-[#E00000] transition-colors flex-shrink-0 lg:hidden`}
+                            onClick={() => {
+                              if (chatMessagesView?.length >= 5) {
+                                dispatch(
+                                  EndChatValue({
+                                    open: true,
+                                    type: "audio",
+                                    chat: chatMessagesView?.length,
+                                  })
+                                );
+                              } else {
+                                dispatch(
+                                  EndChatValue({
+                                    open: true,
+                                    type: "audio",
+                                    chat: chatMessagesView?.length,
+                                  })
+                                );
+                              }
+                            }}
+                          >
+                            <CallEndSharpIcon className="text-white !text-[18px]" />
+                          </div>
+                        </CustomTooltip>
+                      </div>
+                      {/* End Call button outside for desktop */}
                       <CustomTooltip
-                        // title={
-                        //   chatMessagesView?.length >= 5
-                        //     ? "End Call"
-                        //     : "Exchange at least 5 chat before ending"
-                        // }
                         title={"End Call"}
                         placement="top"
                         arrow
                       >
-                        {/* ${
-                            chatMessagesView?.length >= 5
-                              ? "bg-[#FE0000]"
-                              : "bg-[#ff6e6e]"
-                          } */}
                         <div
-                          className={`p-2 bg-[#FE0000] rounded-full flex items-center justify-center cursor-pointer`}
+                          className={`p-[11px] bg-[#FE0000] rounded-full flex items-center justify-center cursor-pointer hover:bg-[#E00000] transition-colors flex-shrink-0 hidden lg:flex`}
                           onClick={() => {
                             if (chatMessagesView?.length >= 5) {
                               dispatch(
@@ -2296,109 +2514,6 @@ const Chat = ({ slug, children }) => {
                           <CallEndSharpIcon className="text-white" />
                         </div>
                       </CustomTooltip>
-                      <div className="bg-[#ffffff8f] p-1 pl-2 rounded-full flex justify-between items-center lg:w-[80%] w-full">
-                        <input
-                          disabled={isAiSpeaking}
-                          placeholder="Chat with your AI Trainer ..."
-                          className="border-0 outline-0 !py-1 !px-4 w-full text-white m-plus-rounded-1c-regular"
-                          value={oneLineChatText}
-                          onChange={(e) => {
-                            setTour(false);
-                            setOneLineChatText(e.target.value);
-                          }}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                              // setOneLineChatText(e.target.value);
-                              // e.preventDefault();
-                              if (oneLineChatText?.length) {
-                                senChat();
-                              }
-                            }
-                          }}
-                        />
-                        <div
-                          className={`flex items-center !text-[#060606D9] bg-[#FFE942] hover:bg-[#ffdc42] !capitalize py-1 px-1.5 !rounded-full mr-2 ${
-                            isAiSpeaking
-                              ? "cursor-not-allowed"
-                              : addDocText?.summary
-                              ? "cursor-not-allowed"
-                              : "cursor-pointer"
-                          }`}
-                          onClick={isAiSpeaking ? undefined : handleClick}
-                        >
-                          {isUploading ? (
-                            <div className="w-full flex items-center justify-center">
-                              <div class="h-[25px] w-[25px] rounded-full border-4 border-white border-t-[#FFE942] animate-spin"></div>
-                            </div>
-                          ) : (
-                            <AttachFileIcon />
-                          )}
-                          <input
-                            type="file"
-                            ref={fileInputRef}
-                            className="hidden"
-                            accept=".doc,.docx,.pdf"
-                            onChange={handleFileChange}
-                            disabled={!addDocText?.summary ? false : true}
-                          />
-                        </div>
-                        <div
-                          onClick={() => {
-                            if (isAiSpeaking) {
-                              undefined;
-                            } else {
-                              if (oneLineChatText?.length) {
-                                senChat();
-                              }
-                            }
-                          }}
-                          className={`flex items-center gap-2 !text-[#060606D9] bg-[#FFE942] hover:bg-[#ffdc42] !capitalize !py-1 !px-1 !rounded-full ${
-                            isAiSpeaking
-                              ? "cursor-not-allowed"
-                              : "cursor-pointer"
-                          }`}
-                        >
-                          {/* <span className="m-plus-rounded-1c-medium">
-                          Send&nbsp;Message
-                        </span> */}
-                          <SendMessage />
-                        </div>
-                      </div>
-                      <CustomTooltip
-                        title={
-                          isAutoMode
-                            ? "Auto-Mode ON: Mic auto-starts after AI speaks (Click to disable)"
-                            : "Auto-Mode OFF: Manual mic control (Click to enable)"
-                        }
-                        placement="top"
-                        arrow
-                      >
-                        <div
-                          className={`p-2 relative ${
-                            isAutoMode ? "bg-[#26AD35]" : "bg-[#FFFFFF1A]"
-                          } rounded-full flex items-center justify-center cursor-pointer`}
-                          onClick={toggleAutoMode}
-                        >
-                          <MicNoneOutlinedIcon
-                            className={`${
-                              isAutoMode ? "text-white" : "text-[#FFFFFF80]"
-                            } !text-[20px]`}
-                          />
-                          {/* {tour && (
-                            <div className="left-[130%] absolute lg:flex hidden items-center ">
-                              <ArrowLeftIcon className="right-[80%] absolute text-green-500" />
-                              <div className="shadow-md bg-green-500 text-white sora-regular text-sm px-2 rounded">
-                                Auto-Mode (Enabled)
-                              </div>
-                            </div>
-                          )} */}
-                        </div>
-                      </CustomTooltip>
-                      <div className="lg:flex hidden w-14 h-14 rounded-full p-1 border-2 border-solid border-white overflow-hidden">
-                        <div className="w-full h-full rounded-full flex items-center justify-center text-2xl bg-[#FFDE5A] sora-medium uppercase">
-                          {user?.first_name ? user?.first_name[0] : "U"}
-                        </div>
-                      </div>
                     </div>
                   </div>
                   <div className="h-[20vh] w-full text-transparent"></div>
