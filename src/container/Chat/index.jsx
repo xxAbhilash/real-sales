@@ -16,6 +16,7 @@ import {
   AccordionSummary,
   Box,
   FormControlLabel,
+  IconButton,
   Modal,
   Popover,
   Radio,
@@ -66,6 +67,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 import CommonModal from "../../common/commonModal";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import InfoIcon from "@mui/icons-material/Info";
 
 // Update the SpeakingIndicator component
 const SpeakingIndicator = ({
@@ -205,6 +207,9 @@ const Chat = ({ slug, children }) => {
 
   const [checked, setChecked] = useState(false);
   const [openAnswer, setOpenAnswer] = useState(0);
+  const [coachingPanelAnchor, setCoachingPanelAnchor] = useState(null);
+  const [autoModeInfoAnchor, setAutoModeInfoAnchor] = useState(null);
+  const [manualModeInfoAnchor, setManualModeInfoAnchor] = useState(null);
   const [micUser, setMicUser] = useState(true);
   const [micAi, setMicAi] = useState(true);
   const [isVolClicked, setIsVolClicked] = useState(false);
@@ -1666,9 +1671,65 @@ const Chat = ({ slug, children }) => {
                       />
                     }
                     label={
-                      <p className="sora-semilight text-sm">
-                        RealSales Coaching Panel:
-                      </p>
+                      <div className="flex items-center gap-1.5">
+                        <p className="sora-semilight text-sm">
+                          RealSales Coaching Panel:
+                        </p>
+                        <IconButton
+                          size="small"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCoachingPanelAnchor(e.currentTarget);
+                          }}
+                          sx={{
+                            color: "#FFDE5A",
+                            padding: "2px",
+                            "&:hover": {
+                              backgroundColor: "rgba(255, 222, 90, 0.1)",
+                            },
+                          }}
+                        >
+                          <InfoIcon sx={{ fontSize: "16px" }} />
+                        </IconButton>
+                        <Popover
+                          open={Boolean(coachingPanelAnchor)}
+                          anchorEl={coachingPanelAnchor}
+                          onClose={() => setCoachingPanelAnchor(null)}
+                          anchorOrigin={{
+                            vertical: "bottom",
+                            horizontal: "left",
+                          }}
+                          transformOrigin={{
+                            vertical: "top",
+                            horizontal: "left",
+                          }}
+                          PaperProps={{
+                            sx: {
+                              backgroundColor: "#262D3E",
+                              color: "#FFFFFF",
+                              padding: "12px",
+                              maxWidth: "300px",
+                              border: "1px solid #FFDE5A",
+                              borderRadius: "8px",
+                            },
+                          }}
+                        >
+                          <Typography
+                            sx={{
+                              fontSize: "13px",
+                              lineHeight: "1.5",
+                              fontFamily: "Sora, sans-serif",
+                            }}
+                          >
+                            The RealSales Coaching Panel provides real-time
+                            guidance and feedback during your sales
+                            conversations. It analyzes your dialogue, offers
+                            strategic suggestions, tracks key talking points,
+                            and helps you improve your sales performance in
+                            real-time.
+                          </Typography>
+                        </Popover>
+                      </div>
                     }
                     sx={{
                       cursor: "default",
@@ -2441,7 +2502,25 @@ const Chat = ({ slug, children }) => {
                               >
                                 <FlashAutoIcon className={`${isAutoMode ? "text-[#26AD35]" : "text-[#666666]"} !text-[20px]`} />
                                 <div className="flex-1">
-                                  <div className={`${isAutoMode ? "text-[#060606]" : "text-[#333333]"} font-medium text-sm`}>Auto</div>
+                                  <div className="flex items-center gap-1.5">
+                                    <div className={`${isAutoMode ? "text-[#060606]" : "text-[#333333]"} font-medium text-sm`}>Auto</div>
+                                    <IconButton
+                                      size="small"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setAutoModeInfoAnchor(e.currentTarget);
+                                      }}
+                                      sx={{
+                                        color: "#666666",
+                                        padding: "2px",
+                                        "&:hover": {
+                                          backgroundColor: "rgba(0, 0, 0, 0.05)",
+                                        },
+                                      }}
+                                    >
+                                      <InfoIcon sx={{ fontSize: "14px" }} />
+                                    </IconButton>
+                                  </div>
                                   <div className="text-[#666666] text-xs mt-0.5">
                                     Mic auto-starts after AI speaks
                                   </div>
@@ -2450,6 +2529,39 @@ const Chat = ({ slug, children }) => {
                                   <CheckIcon className="text-[#26AD35] !text-[18px]" />
                                 )}
                               </div>
+                              <Popover
+                                open={Boolean(autoModeInfoAnchor)}
+                                anchorEl={autoModeInfoAnchor}
+                                onClose={() => setAutoModeInfoAnchor(null)}
+                                anchorOrigin={{
+                                  vertical: "bottom",
+                                  horizontal: "left",
+                                }}
+                                transformOrigin={{
+                                  vertical: "top",
+                                  horizontal: "left",
+                                }}
+                                PaperProps={{
+                                  sx: {
+                                    backgroundColor: "#262D3E",
+                                    color: "#FFFFFF",
+                                    padding: "12px",
+                                    maxWidth: "280px",
+                                    border: "1px solid #26AD35",
+                                    borderRadius: "8px",
+                                  },
+                                }}
+                              >
+                                <Typography
+                                  sx={{
+                                    fontSize: "13px",
+                                    lineHeight: "1.5",
+                                    fontFamily: "Sora, sans-serif",
+                                  }}
+                                >
+                                  <strong>Auto Mode:</strong> In Auto mode, your microphone automatically activates after the AI finishes speaking. This creates a seamless, natural conversation flow where you can respond immediately without manually clicking the microphone button. Perfect for hands-free conversations and faster interactions.
+                                </Typography>
+                              </Popover>
 
                               {/* Manual Mode Option */}
                               <div
@@ -2460,7 +2572,25 @@ const Chat = ({ slug, children }) => {
                               >
                                 <MicNoneOutlinedIcon className={`${!isAutoMode ? "text-[#666666]" : "text-[#666666]"} !text-[20px]`} />
                                 <div className="flex-1">
-                                  <div className={`${!isAutoMode ? "text-[#060606]" : "text-[#333333]"} font-medium text-sm`}>Manual</div>
+                                  <div className="flex items-center gap-1.5">
+                                    <div className={`${!isAutoMode ? "text-[#060606]" : "text-[#333333]"} font-medium text-sm`}>Manual</div>
+                                    <IconButton
+                                      size="small"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setManualModeInfoAnchor(e.currentTarget);
+                                      }}
+                                      sx={{
+                                        color: "#666666",
+                                        padding: "2px",
+                                        "&:hover": {
+                                          backgroundColor: "rgba(0, 0, 0, 0.05)",
+                                        },
+                                      }}
+                                    >
+                                      <InfoIcon sx={{ fontSize: "14px" }} />
+                                    </IconButton>
+                                  </div>
                                   <div className="text-[#666666] text-xs mt-0.5">
                                     Click mic to respond
                                   </div>
@@ -2469,6 +2599,39 @@ const Chat = ({ slug, children }) => {
                                   <CheckIcon className="text-[#666666] !text-[18px]" />
                                 )}
                               </div>
+                              <Popover
+                                open={Boolean(manualModeInfoAnchor)}
+                                anchorEl={manualModeInfoAnchor}
+                                onClose={() => setManualModeInfoAnchor(null)}
+                                anchorOrigin={{
+                                  vertical: "bottom",
+                                  horizontal: "left",
+                                }}
+                                transformOrigin={{
+                                  vertical: "top",
+                                  horizontal: "left",
+                                }}
+                                PaperProps={{
+                                  sx: {
+                                    backgroundColor: "#262D3E",
+                                    color: "#FFFFFF",
+                                    padding: "12px",
+                                    maxWidth: "280px",
+                                    border: "1px solid #666666",
+                                    borderRadius: "8px",
+                                  },
+                                }}
+                              >
+                                <Typography
+                                  sx={{
+                                    fontSize: "13px",
+                                    lineHeight: "1.5",
+                                    fontFamily: "Sora, sans-serif",
+                                  }}
+                                >
+                                  <strong>Manual Mode:</strong> In Manual mode, you have full control over when to speak. Click the microphone button when you're ready to respond. This gives you time to think, review the conversation, or prepare your response before speaking. Ideal for more deliberate conversations or when you need more control.
+                                </Typography>
+                              </Popover>
                             </div>
                           </Popover>
                         </div>
